@@ -1,0 +1,347 @@
+﻿<UserControl x:Class="WelldonePOS.UserControls.Views.TFormSalesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:h="clr-namespace:WelldonePOS.Helpers"
+             xmlns:m="clr-namespace:WelldonePOS.Models.Misc">
+    <UserControl.CommandBindings>
+        <CommandBinding Command="m:UICommands.AddSalesHistory"
+                        CanExecute="AddSalesHistory_CanExecute"
+                        Executed="AddSalesHistory_Executed"/>
+        <CommandBinding Command="m:UICommands.SaveSalesTransaction"
+                        CanExecute="Save_CanExecute"
+                        Executed="Save_Executed"/>
+    </UserControl.CommandBindings>
+    
+    <UserControl.Resources>
+        <CollectionViewSource x:Key="salesHistorySource"
+                              Source="{Binding CurrentSalesHistoryCollection}"/>
+        <CollectionViewSource x:Key="customerSource"
+                              Source="{Binding CurrentCustomerCollection}"/>
+        <CollectionViewSource x:Key="itemSource"
+                              Source="{Binding CurrentTItemCollection}"/>
+        <CollectionViewSource x:Key="unitSource"
+                              Source="{Binding CurrentUnitCollection}"/>
+    </UserControl.Resources>
+
+    <DockPanel Style="{StaticResource dplMainContainer}">
+
+        <Border DockPanel.Dock="Top"
+                Style="{StaticResource bdrHeaderHeavy}">
+            <DockPanel LastChildFill="False">
+                <TextBlock DockPanel.Dock="Left" 
+                           Text="Form Transaksi Penjualan"/>
+                <TextBlock DockPanel.Dock="Right"
+                           Style="{StaticResource tblHeader1}"
+                           Text="{Binding CurrentSalesTransaction.Seller.Name}"/>
+                <TextBlock DockPanel.Dock="Right"
+                           Style="{StaticResource tblHeader1}"
+                           Text="Nama Kasir : "/>
+            </DockPanel>
+        </Border>
+
+        <DockPanel DockPanel.Dock="Bottom" 
+                   LastChildFill="False">
+            <StackPanel DockPanel.Dock="Left"
+                        Style="{StaticResource splButtonGroup}">
+                <Button Content="Baru"
+                        Style="{StaticResource btnAction}"
+                        IsEnabled="{Binding Presenter.CurrentLogin.Accessibility.Rights[2]}"
+                        />
+                <Button Content="Tunda"
+                        Style="{StaticResource btnAction}"
+                        IsEnabled="{Binding Presenter.CurrentLogin.Accessibility.Rights[2]}"
+                        />
+            </StackPanel>
+            <StackPanel DockPanel.Dock="Right"
+                        Style="{StaticResource splButtonGroup}">
+                <Button Content="Tutup"
+                        Style="{StaticResource btnAction}"
+                        Click="Close_Click"/>
+            </StackPanel>
+        </DockPanel>
+
+        <Border Style="{StaticResource bdrContentHeavy}">
+            <DockPanel>
+                <DockPanel DockPanel.Dock="Left">
+                    <Grid DockPanel.Dock="Top" 
+                          Style="{StaticResource grdDetailPanel}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="150"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <Label Grid.Column="0"
+                               Grid.Row="0"
+                               Content="Nomor"/>
+                        <Label Grid.Column="1"
+                               Grid.Row="0"
+                               Content=":"/>
+                        <TextBox Grid.Column="2"
+                                 Grid.Row="0"
+                                 IsEnabled="False"
+                                 Style="{StaticResource txbDetail}"
+                                 Text="{Binding CurrentSalesTransaction.Code}"/>
+                        <Label Grid.Column="0"
+                               Grid.Row="1"
+                               Content="Tanggal"/>
+                        <Label Grid.Column="1"
+                               Grid.Row="1"
+                               Content=":"/>
+                        <TextBox Grid.Column="2"
+                                 Grid.Row="1"
+                                 IsEnabled="False"
+                                 Style="{StaticResource txbDetail}"
+                                 Text="{Binding CurrentSalesTransaction.TransactionDate}"/>
+                        <Label Grid.Column="0"
+                               Grid.Row="2"
+                               Content="Customer"/>
+                        <Label Grid.Column="1"
+                               Grid.Row="2"
+                               Content=":"/>
+                        <ComboBox Grid.Column="2"
+                                  Grid.Row="2"
+                                  Style="{StaticResource cbbDetail}"
+                                  ItemsSource="{Binding Source={StaticResource customerSource}}"
+                                  DisplayMemberPath="Name"
+                                  SelectedValue="{Binding CurrentSalesTransaction.Consumer}"/>
+                    </Grid>
+                    <Border Style="{StaticResource bdrContentLight}">
+                        <ScrollViewer>
+
+                        </ScrollViewer>
+                    </Border>
+                </DockPanel>
+                <DockPanel DockPanel.Dock="Right"
+                           LastChildFill="False">
+                    <StackPanel DockPanel.Dock="Bottom"
+                                Style="{StaticResource splButtonGroup}">
+                        <Button Content="Simpan"
+                                Style="{StaticResource btnAction}"
+                                IsEnabled="{Binding Presenter.CurrentLogin.Accessibility.Rights[2]}"
+                                Command="m:UICommands.SaveSalesTransaction"/>
+                        <Button Content="Cetak"
+                                Style="{StaticResource btnAction}"
+                                IsEnabled="{Binding Presenter.CurrentLogin.Accessibility.Rights[2]}"
+                                />
+                    </StackPanel>
+                    <Grid DockPanel.Dock="Bottom" 
+                          Style="{StaticResource grdDetailPanel}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <Label Grid.Column="0"
+                               Grid.Row="0"
+                               Content="Total Bayar"/>
+                        <Label Grid.Column="1"
+                               Grid.Row="0"
+                               Content=":"/>
+                        <TextBox Grid.Column="2"
+                                 Grid.Row="0"
+                                 IsEnabled="False"
+                                 Style="{StaticResource txbDetail}"
+                                 Text="{Binding CurrentSalesTransaction.SumTotal, StringFormat='Rp #,#'}"/>
+                        <Label Grid.Column="0"
+                               Grid.Row="1"
+                               Content="Bayar Tunai"/>
+                        <Label Grid.Column="1"
+                               Grid.Row="1"
+                               Content=":"/>
+                        <TextBox Grid.Column="2"
+                                 Grid.Row="1"
+                                 MaxLength="14"
+                                 Style="{StaticResource txbDetail}"
+                                 PreviewKeyDown="NumericKey_PreviewKeyDown"
+                                 TextChanged="CashPay_TextChanged">
+                            <TextBox.Text>
+                                <Binding Path="CurrentPaid" UpdateSourceTrigger="PropertyChanged">
+                                    <Binding.ValidationRules>
+                                        <h:ValidationHelper Type="TFormSalesPresenter" Property="CurrentPaid"/>
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </TextBox.Text>
+                        </TextBox>
+                        <Label Grid.Column="0"
+                               Grid.Row="2"
+                               Content="Kembali"/>
+                        <Label Grid.Column="1"
+                               Grid.Row="2"
+                               Content=":"/>
+                        <TextBox Grid.Column="2"
+                                 Grid.Row="2"
+                                 IsEnabled="False"
+                                 Style="{StaticResource txbDetail}"
+                                 Text="{Binding CurrentChange, StringFormat='Rp #,#'}"/>
+                    </Grid>
+                    <Border Style="{StaticResource bdrContentLight}">
+                        <DockPanel>
+                            <StackPanel DockPanel.Dock="Bottom"
+                                        Style="{StaticResource splButtonGroup}">
+                                <Button Content="Tambahkan"
+                                        Style="{StaticResource btnAction}"
+                                        Command="m:UICommands.AddSalesHistory"/>
+                            </StackPanel>
+                            <Border DockPanel.Dock="Top"
+                                    Style="{StaticResource bdrHeaderLight}">
+                                <TextBlock Text="Input Barang Dijual"/>
+                            </Border>
+                            <DockPanel DockPanel.Dock="Top"
+                                       Margin="4 0">
+                                <ComboBox DockPanel.Dock="Left" 
+                                          Style="{StaticResource cbbTFilter}"
+                                          ItemsSource="{Binding Source={StaticResource tItemFilterOptions}}"
+                                          SelectedIndex="0"/>
+                                <TextBox x:Name="filterText" 
+                                         Style="{StaticResource txbTFilter_Sales}"
+                                         TextChanged="Filter_TextChanged"/>
+                            </DockPanel>
+                            <Grid>
+                                <Grid Style="{StaticResource grdDetailPanel}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="198"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <Label Grid.Column="0"
+                                           Grid.Row="0"
+                                           Content="Barang Dijual"/>
+                                    <Label Grid.Column="1"
+                                           Grid.Row="0"
+                                           Content=":"/>
+                                    <TextBox Grid.Column="2"
+                                             Grid.Row="0"
+                                             Style="{StaticResource txbDetail}"
+                                             Text="{Binding CurrentSalesHistory.SoldItem.Name}"
+                                             IsEnabled="False"/>
+                                    <Label Grid.Column="0"
+                                           Grid.Row="1"
+                                           Content="Potongan"/>
+                                    <Label Grid.Column="1"
+                                           Grid.Row="1"
+                                           Content=":"/>
+                                    <ListView Grid.Column="2"
+                                              Grid.Row="1"
+                                              Height="80"
+                                              Margin="0 0 0 20">
+                                        <ListView.View>
+                                            <GridView>
+                                                <GridViewColumn Header="Jenis"
+                                                                />
+                                                <GridViewColumn Header="Deskripsi"
+                                                                />
+                                            </GridView>
+                                        </ListView.View>
+                                    </ListView>
+                                    <Label Grid.Column="0"
+                                           Grid.Row="2"
+                                           Content="Satuan"/>
+                                    <Label Grid.Column="1"
+                                           Grid.Row="2"
+                                           Content=":"/>
+                                    <ComboBox Grid.Column="3"
+                                              Grid.Row="2"
+                                              Style="{StaticResource cbbDetail}"
+                                              ItemsSource="{Binding Source={StaticResource unitSource}}"
+                                              SelectedItem="{Binding CurrentSalesHistory.SoldUnit}"
+                                              SelectionChanged="Unit_SelectionChanged"/>
+                                    <Label Grid.Column="0"
+                                           Grid.Row="3"
+                                           Content="Persediaan"/>
+                                    <Label Grid.Column="1"
+                                           Grid.Row="3"
+                                           Content=":"/>
+                                    <TextBox Grid.Column="2"
+                                             Grid.Row="3"
+                                             IsEnabled="False"
+                                             Style="{StaticResource txbDetail}"
+                                             Text="{Binding CurrentAvailableStock}"/>
+                                    <Label Grid.Column="0"
+                                           Grid.Row="4"
+                                           Content="Jumlah Dijual"/>
+                                    <Label Grid.Column="1"
+                                           Grid.Row="4"
+                                           Content=":"/>
+                                    <TextBox Grid.Column="2"
+                                             Grid.Row="4"
+                                             MaxLength="5"
+                                             Style="{StaticResource txbDetail}"
+                                             PreviewKeyDown="NumericKey_PreviewKeyDown">
+                                        <TextBox.Text>
+                                            <Binding Path="CurrentSalesHistory.SoldQty" UpdateSourceTrigger="PropertyChanged">
+                                                <Binding.ValidationRules>
+                                                    <h:ValidationHelper Type="SalesHistory" Property="SoldQty"/>
+                                                </Binding.ValidationRules>
+                                            </Binding>
+                                        </TextBox.Text>
+                                    </TextBox>
+                                </Grid>
+                                <Border x:Name="filterResult" 
+                                        Style="{StaticResource bdrFilterResult}">
+                                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                        <ItemsControl Margin="5"
+                                                      ItemsSource="{Binding Source={StaticResource itemSource}}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Button Style="{StaticResource btnFilterResult}" 
+                                                            Content="{Binding Name}"
+                                                            Click="Select_Clicked"/>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </ScrollViewer>
+                                </Border>
+                            </Grid>
+                        </DockPanel>
+                    </Border>
+                </DockPanel>
+                <ListView ItemsSource="{Binding Source={StaticResource salesHistorySource}}"
+                          ItemContainerStyle="{StaticResource lviDefault}">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Nama Barang"
+                                            DisplayMemberBinding="{Binding SoldItem.Name}"/>
+                            <GridViewColumn Header="Satuan"
+                                            DisplayMemberBinding="{Binding SoldUnit.Name}"/>
+                            <GridViewColumn Header="Harga"
+                                            DisplayMemberBinding="{Binding SoldPrice, StringFormat='Rp #,#'}"/>
+                            <GridViewColumn Header="Qty"
+                                            DisplayMemberBinding="{Binding SoldQty}"/>
+                            <GridViewColumn Header="SubTotal"
+                                            DisplayMemberBinding="{Binding SubTotal, StringFormat='Rp #,#'}"/>
+                            <GridViewColumn Header="Hapus">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Style="{StaticResource btnDelete}"
+                                                Click="Delete_Click"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </DockPanel>
+        </Border>
+
+    </DockPanel>
+</UserControl>

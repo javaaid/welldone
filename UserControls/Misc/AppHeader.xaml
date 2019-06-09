@@ -1,0 +1,20 @@
+﻿<UserControl x:Class="WelldonePOS.UserControls.Misc.AppHeader"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:uc="clr-namespace:WelldonePOS.UserControls.Misc">
+    <Border Style="{StaticResource bdrAppHeader_1}">
+        <DockPanel LastChildFill="False">
+
+            <Viewbox DockPanel.Dock="Left" 
+                     Style="{StaticResource vbxAppHeader_1}">
+                <uc:AppLogo/>
+            </Viewbox>
+
+            <Button DockPanel.Dock="Right"
+                    Tag="{Binding CurrentLogin.PhotoPath}"
+                    Style="{StaticResource btnAppHeader_1}"
+                    Click="MyProfile_Clicked"/>
+
+        </DockPanel>
+    </Border>
+</UserControl>

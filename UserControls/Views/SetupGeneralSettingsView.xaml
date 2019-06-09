@@ -1,0 +1,495 @@
+﻿<UserControl x:Class="WelldonePOS.UserControls.Views.SetupGeneralSettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:h="clr-namespace:WelldonePOS.Helpers"
+             xmlns:e="clr-namespace:WelldonePOS.Models.Enums"
+             xmlns:m="clr-namespace:WelldonePOS.Models.Misc">
+    <UserControl.CommandBindings>
+        <CommandBinding Command="m:UICommands.SaveCompanyProfile"
+                        CanExecute="SaveCompanyProfile_CanExecute"
+                        Executed="SaveCompanyProfile_Executed"/>
+    </UserControl.CommandBindings>
+
+    <DockPanel Style="{StaticResource dplMainContainer}">
+
+        <Border DockPanel.Dock="Top"
+                Style="{StaticResource bdrHeaderHeavy}">
+            <TextBlock DockPanel.Dock="Left"
+                       Text="Pengaturan Data Toko"/>
+        </Border>
+
+        <StackPanel DockPanel.Dock="Bottom"
+                    Style="{StaticResource splButtonGroup}"
+                    IsEnabled="{Binding IsIdle}">
+            <Button Content="Tutup"
+                    Style="{StaticResource btnAction}"
+                    Click="Close_Click"/>
+        </StackPanel>
+
+        <Border Style="{StaticResource bdrContentHeavy}">
+            <DockPanel>
+                <DockPanel x:Name="companyProfileDetailPanel" 
+                           DockPanel.Dock="Right"
+                           Style="{StaticResource dplDetailPanel}">
+                    <Border DockPanel.Dock="Top"
+                            Style="{StaticResource bdrHeaderLight}">
+                        <TextBlock Text="Pengaturan Profil Toko"/>
+                    </Border>
+                    <StackPanel DockPanel.Dock="Bottom"
+                                Style="{StaticResource splButtonGroup}">
+                        <Button Content="Simpan"
+                                Style="{StaticResource btnAction}"
+                                Command="m:UICommands.SaveCompanyProfile"/>
+                        <Button Content="Batal"
+                                Style="{StaticResource btnAction}"
+                                Click="CloseCompanyProfileDetail_Click"/>
+                    </StackPanel>
+                    <ScrollViewer VerticalScrollBarVisibility="Visible">
+                        <Grid Style="{StaticResource grdDetailPanel}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="20"/>
+                                <ColumnDefinition Width="200"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <Label Grid.Column="0"
+                                   Grid.Row="0"
+                                   Content="Nama Toko"/>
+                            <Label Grid.Column="1"
+                                   Grid.Row="0"
+                                   Content=":"/>
+                            <TextBox Grid.Column="2"
+                                     Grid.ColumnSpan="2"
+                                     Grid.Row="0"
+                                     MaxLength="25"
+                                     Style="{StaticResource txbDetail}">
+                                <TextBox.Text>
+                                    <Binding Path="CurrentCompanyProfileTemp.Name"
+                                             UpdateSourceTrigger="PropertyChanged">
+                                        <Binding.ValidationRules>
+                                            <h:ValidationHelper Type="CompanyProfile"
+                                                                Property="Name"/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                            <Label Grid.Column="0"
+                                   Grid.Row="1"
+                                   Content="Nama Pemilik"/>
+                            <Label Grid.Column="1"
+                                   Grid.Row="1"
+                                   Content=":"/>
+                            <TextBox Grid.Column="2"
+                                     Grid.ColumnSpan="2"
+                                     Grid.Row="1"
+                                     MaxLength="25"
+                                     Style="{StaticResource txbDetail}">
+                                <TextBox.Text>
+                                    <Binding Path="CurrentCompanyProfileTemp.Owner"
+                                             UpdateSourceTrigger="PropertyChanged">
+                                        <Binding.ValidationRules>
+                                            <h:ValidationHelper Type="CompanyProfile"
+                                                                Property="Owner"/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                            <Label Grid.Column="0"
+                                   Grid.Row="2"
+                                   Content="Logo"/>
+                            <Label Grid.Column="1"
+                                   Grid.Row="2"
+                                   Content=":"/>
+                            <DockPanel Grid.Column="2"
+                                       Grid.ColumnSpan="2"
+                                       Grid.Row="2">
+                                <Button DockPanel.Dock="Right"
+                                        Content="..."
+                                        Style="{StaticResource btnSetupGeneralSettingsView_1}"
+                                        Click="BrowseLogo_Click"/>
+                                <TextBox Style="{StaticResource txbDetail}"
+                                         Text="{Binding CurrentCompanyProfileTemp.LogoPath}"
+                                         IsEnabled="False"/>
+                            </DockPanel>
+                            <Label Grid.Column="0"
+                                   Grid.Row="3"
+                                   Content="Telepon"/>
+                            <Label Grid.Column="1"
+                                   Grid.Row="3"
+                                   Content=":"/>
+                            <Label Grid.Column="2"
+                                   Grid.Row="3"
+                                   Content="1."/>
+                            <TextBox Grid.Column="3"
+                                     Grid.Row="3"
+                                     MaxLength="15"
+                                     Style="{StaticResource txbDetail}"
+                                     PreviewKeyDown="NumericKey_PreviewKeyDown">
+                                <TextBox.Text>
+                                    <Binding Path="CurrentCompanyProfileTemp.Phone1"
+                                             UpdateSourceTrigger="PropertyChanged">
+                                        <Binding.ValidationRules>
+                                            <h:ValidationHelper Type="CompanyProfile"
+                                                                Property="Phone1"/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                            <Label Grid.Column="2"
+                                   Grid.Row="4"
+                                   Content="2."/>
+                            <TextBox Grid.Column="3"
+                                     Grid.Row="4"
+                                     MaxLength="15"
+                                     Style="{StaticResource txbDetail}"
+                                     Text="{Binding CurrentCompanyProfileTemp.Phone2}"
+                                     PreviewKeyDown="NumericKey_PreviewKeyDown"/>
+                            <Label Grid.Column="0"
+                                   Grid.Row="5"
+                                   Content="Fax"/>
+                            <Label Grid.Column="1"
+                                   Grid.Row="5"
+                                   Content=":"/>
+                            <TextBox Grid.Column="2"
+                                     Grid.ColumnSpan="2"
+                                     Grid.Row="5"
+                                     MaxLength="20"
+                                     Style="{StaticResource txbDetail}"
+                                     Text="{Binding CurrentCompanyProfileTemp.Fax}"
+                                     PreviewKeyDown="NumericKey_PreviewKeyDown"/>
+                            <Label Grid.Column="0"
+                                   Grid.Row="6"
+                                   Content="Email"/>
+                            <Label Grid.Column="1"
+                                   Grid.Row="6"
+                                   Content=":"/>
+                            <TextBox Grid.Column="2"
+                                     Grid.ColumnSpan="2"
+                                     Grid.Row="6"
+                                     MaxLength="50"
+                                     Style="{StaticResource txbDetail}"
+                                     Text="{Binding CurrentCompanyProfileTemp.Email}"/>
+                            <Label Grid.Column="0"
+                                   Grid.Row="7"
+                                   Content="Website"/>
+                            <Label Grid.Column="1"
+                                   Grid.Row="7"
+                                   Content=":"/>
+                            <TextBox Grid.Column="2"
+                                     Grid.ColumnSpan="2"
+                                     Grid.Row="7"
+                                     MaxLength="75"
+                                     Style="{StaticResource txbDetail}"
+                                     Text="{Binding CurrentCompanyProfileTemp.Website}"/>
+                            <Label Grid.Column="0"
+                                   Grid.Row="8"
+                                   Content="Alamat"/>
+                            <Label Grid.Column="1"
+                                   Grid.Row="8"
+                                   Content=":"/>
+                            <Label Grid.Column="2"
+                                   Grid.Row="8"
+                                   Content="1."/>
+                            <TextBox Grid.Column="3"
+                                     Grid.Row="8"
+                                     MaxLength="75"
+                                     Style="{StaticResource txbDetail}">
+                                <TextBox.Text>
+                                    <Binding Path="CurrentCompanyProfileTemp.Address1"
+                                             UpdateSourceTrigger="PropertyChanged">
+                                        <Binding.ValidationRules>
+                                            <h:ValidationHelper Type="CompanyProfile"
+                                                                Property="Address1"/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                            <Label Grid.Column="2"
+                                   Grid.Row="9"
+                                   Content="2."/>
+                            <TextBox Grid.Column="3"
+                                     Grid.Row="9"
+                                     MaxLength="75"
+                                     Style="{StaticResource txbDetail}"
+                                     Text="{Binding CurrentCompanyProfileTemp.Address2}"/>
+                            <Label Grid.Column="0"
+                                   Grid.Row="10"
+                                   Content="Kota"/>
+                            <Label Grid.Column="1"
+                                   Grid.Row="10"
+                                   Content=":"/>
+                            <TextBox Grid.Column="2"
+                                     Grid.ColumnSpan="2"
+                                     Grid.Row="10"
+                                     MaxLength="15"
+                                     Style="{StaticResource txbDetail}"
+                                     Text="{Binding CurrentCompanyProfileTemp.City}"/>
+                            <Label Grid.Column="0"
+                                   Grid.Row="11"
+                                   Content="Kode Pos"/>
+                            <Label Grid.Column="1"
+                                   Grid.Row="11"
+                                   Content=":"/>
+                            <TextBox Grid.Column="2"
+                                     Grid.ColumnSpan="2"
+                                     Grid.Row="11"
+                                     MaxLength="10"
+                                     Style="{StaticResource txbDetail}"
+                                     Text="{Binding CurrentCompanyProfileTemp.Zip}"/>
+                        </Grid>
+                    </ScrollViewer>
+                </DockPanel>
+                <DockPanel x:Name="companyPoliciesDetailPanel" 
+                           DockPanel.Dock="Right"
+                           Style="{StaticResource dplDetailPanel}">
+                    <Border DockPanel.Dock="Top"
+                            Style="{StaticResource bdrHeaderLight}">
+                        <TextBlock Text="Pengaturan Kebijakan Toko"/>
+                    </Border>
+                    <StackPanel DockPanel.Dock="Bottom"
+                                Style="{StaticResource splButtonGroup}">
+                        <Button Content="Simpan"
+                                Style="{StaticResource btnAction}"
+                                Click="SaveCompanyPolicies_Click"/>
+                        <Button Content="Batal"
+                                Style="{StaticResource btnAction}"
+                                Click="CloseCompanyPoliciesDetail_Click"/>
+                    </StackPanel>
+                    <ScrollViewer VerticalScrollBarVisibility="Visible">
+                        <Grid Style="{StaticResource grdDetailPanel}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="200"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            
+                            <Label Grid.Column="0"
+                                   Grid.Row="0"
+                                   Content="Metode Inventarisasi"/>
+                            <Label Grid.Column="1"
+                                   Grid.Row="0"
+                                   Content=":"/>
+                            <ComboBox Grid.Column="2"
+                                      Grid.Row="0"
+                                      Style="{StaticResource cbbDetail}"
+                                      ItemsSource="{Binding Source={h:EnumBindingHelper {x:Type e:InventoryCosting}}}"
+                                      SelectedValue="{Binding CurrentCompanyPoliciesTemp.InventoryCostingPolicy}"/>
+                        </Grid>
+                    </ScrollViewer>
+                </DockPanel>
+                <Border Style="{StaticResource bdrContentLight}">
+                    <StackPanel>
+                        <DockPanel>
+                            <Border DockPanel.Dock="Top"
+                                    Style="{StaticResource bdrHeaderLight}">
+                                <TextBlock Text="Profil Toko"/>
+                            </Border>
+                            <StackPanel DockPanel.Dock="Bottom"
+                                        Style="{StaticResource splButtonGroup}"
+                                        IsEnabled="{Binding IsIdle}">
+                                <Button Content="Edit"
+                                        Style="{StaticResource btnAction}"
+                                        IsEnabled="{Binding Presenter.CurrentLogin.Accessibility.Rights[46]}"
+                                        Click="EditCompanyProfile_Click"/>
+                            </StackPanel>
+                            <Grid DockPanel.Dock="Left" 
+                                  Style="{StaticResource grdSetupGeneralSettingsView_1}">
+                                <Border Style="{StaticResource bdrContentLight}">
+                                    <Viewbox Tag="{Binding CurrentGeneralSettings[0].Profile.LogoPath}" 
+                                             Style="{StaticResource vbxSetupGeneralSettingsView_1}">
+                                        <Rectangle Style="{StaticResource rctSetupGeneralSettingsView_1}"/>
+                                    </Viewbox>
+                                </Border>
+                            </Grid>
+                            <DockPanel Style="{StaticResource dplSetupGeneralSettingsView_1}">
+                                <ScrollViewer VerticalScrollBarVisibility="Visible">
+                                    <Grid Style="{StaticResource grdDetailPanel}">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="200"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+
+                                        <Label Grid.Column="0"
+                                               Grid.Row="0"
+                                               Content="Nama Toko"/>
+                                        <Label Grid.Column="1"
+                                               Grid.Row="0"
+                                               Content=":"/>
+                                        <TextBox Grid.Column="2"
+                                                 Grid.Row="0"
+                                                 Style="{StaticResource txbDetailPreview1}"
+                                                 Text="{Binding CurrentGeneralSettings[0].Profile.Name}"/>
+                                        <Label Grid.Column="0"
+                                               Grid.Row="1"
+                                               Content="Nama Pemilik"/>
+                                        <Label Grid.Column="1"
+                                               Grid.Row="1"
+                                               Content=":"/>
+                                        <TextBox Grid.Column="2"
+                                                 Grid.Row="1"
+                                                 Style="{StaticResource txbDetailPreview1}"
+                                                 Text="{Binding CurrentGeneralSettings[0].Profile.Owner}"/>
+                                        <Label Grid.Column="0"
+                                               Grid.Row="2"
+                                               Content="Telepon"/>
+                                        <Label Grid.Column="1"
+                                               Grid.Row="2"
+                                               Content=":"/>
+                                        <TextBox Grid.Column="2"
+                                                 Grid.Row="2"
+                                                 Style="{StaticResource txbDetailPreview2}"
+                                                 Tag="1."
+                                                 Text="{Binding CurrentGeneralSettings[0].Profile.Phone1}"/>
+                                        <TextBox Grid.Column="2"
+                                                 Grid.Row="3"
+                                                 Style="{StaticResource txbDetailPreview2}"
+                                                 Tag="2."
+                                                 Text="{Binding CurrentGeneralSettings[0].Profile.Phone2}"/>
+                                        <Label Grid.Column="0"
+                                               Grid.Row="4"
+                                               Content="Fax"/>
+                                        <Label Grid.Column="1"
+                                               Grid.Row="4"
+                                               Content=":"/>
+                                        <TextBox Grid.Column="2"
+                                                 Grid.Row="4"
+                                                 Style="{StaticResource txbDetailPreview1}"
+                                                 Text="{Binding CurrentGeneralSettings[0].Profile.Fax}"/>
+                                        <Label Grid.Column="0"
+                                               Grid.Row="5"
+                                               Content="Email"/>
+                                        <Label Grid.Column="1"
+                                               Grid.Row="5"
+                                               Content=":"/>
+                                        <TextBox Grid.Column="2"
+                                                 Grid.Row="5"
+                                                 Style="{StaticResource txbDetailPreview1}"
+                                                 Text="{Binding CurrentGeneralSettings[0].Profile.Email}"/>
+                                        <Label Grid.Column="0"
+                                               Grid.Row="6"
+                                               Content="Website"/>
+                                        <Label Grid.Column="1"
+                                               Grid.Row="6"
+                                               Content=":"/>
+                                        <TextBox Grid.Column="2"
+                                                 Grid.Row="6"
+                                                 Style="{StaticResource txbDetailPreview1}"
+                                                 Text="{Binding CurrentGeneralSettings[0].Profile.Website}"/>
+                                        <Label Grid.Column="0"
+                                               Grid.Row="7"
+                                               Content="Alamat"/>
+                                        <Label Grid.Column="1"
+                                               Grid.Row="7"
+                                               Content=":"/>
+                                        <TextBox Grid.Column="2"
+                                                 Grid.Row="7"
+                                                 Style="{StaticResource txbDetailPreview2}"
+                                                 Tag="1."
+                                                 Text="{Binding CurrentGeneralSettings[0].Profile.Address1}"/>
+                                        <TextBox Grid.Column="2"
+                                                 Grid.Row="8"
+                                                 Style="{StaticResource txbDetailPreview2}"
+                                                 Tag="2."
+                                                 Text="{Binding CurrentGeneralSettings[0].Profile.Address2}"/>
+                                        <Label Grid.Column="0"
+                                               Grid.Row="9"
+                                               Content="Kota"/>
+                                        <Label Grid.Column="1"
+                                               Grid.Row="9"
+                                               Content=":"/>
+                                        <TextBox Grid.Column="2"
+                                                 Grid.Row="9"
+                                                 Style="{StaticResource txbDetailPreview1}"
+                                                 Text="{Binding CurrentGeneralSettings[0].Profile.City}"/>
+                                        <Label Grid.Column="0"
+                                               Grid.Row="10"
+                                               Content="Kode Pos"/>
+                                        <Label Grid.Column="1"
+                                               Grid.Row="10"
+                                               Content=":"/>
+                                        <TextBox Grid.Column="2"
+                                                 Grid.Row="10"
+                                                 Style="{StaticResource txbDetailPreview1}"
+                                                 Text="{Binding CurrentGeneralSettings[0].Profile.Zip}"/>
+                                    </Grid>
+                                </ScrollViewer>
+                            </DockPanel>
+                        </DockPanel>
+                        <DockPanel>
+                            <Border DockPanel.Dock="Top"
+                                    Style="{StaticResource bdrHeaderLight}">
+                                <TextBlock Text="Kebijakan Toko"/>
+                            </Border>
+                            <StackPanel DockPanel.Dock="Bottom"
+                                        Style="{StaticResource splButtonGroup}"
+                                        IsEnabled="{Binding IsIdle}">
+                                <Button Content="Edit"
+                                        Style="{StaticResource btnAction}"
+                                        IsEnabled="{Binding Presenter.CurrentLogin.Accessibility.Rights[46]}"
+                                        Click="EditCompanyPolicies_Click"/>
+                            </StackPanel>
+                            <DockPanel Style="{StaticResource dplSetupGeneralSettingsView_2}">
+                                <ScrollViewer VerticalScrollBarVisibility="Visible">
+                                    <Grid Style="{StaticResource grdDetailPanel}">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="300"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+
+                                        <Label Grid.Column="0"
+                                               Grid.Row="0"
+                                               Content="Metode Inventarisasi"/>
+                                        <Label Grid.Column="1"
+                                               Grid.Row="0"
+                                               Content=":"/>
+                                        <TextBox Grid.Column="2"
+                                                 Grid.Row="0"
+                                                 Style="{StaticResource txbDetailPreview1}"
+                                                 Text="{Binding CurrentGeneralSettings[0].Policies.InventoryCostingPolicy}"/>
+                                    </Grid>
+                                </ScrollViewer>
+                            </DockPanel>
+                        </DockPanel>
+                    </StackPanel>
+                </Border>
+            </DockPanel>
+        </Border>
+        
+    </DockPanel>
+</UserControl>

@@ -1,0 +1,40 @@
+﻿<UserControl x:Class="WelldonePOS.UserControls.Misc.ProfileBox"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <StackPanel Style="{StaticResource splProfileBox_1}">
+
+        <Polygon Style="{StaticResource plgProfileBox_1}"/>
+
+        <DockPanel LastChildFill="False"
+                   Style="{StaticResource dplProfileBox_1}">
+            <Viewbox DockPanel.Dock="Left" 
+                     Tag="{Binding CurrentLogin.PhotoPath}"
+                     Style="{StaticResource vbxProfileBox_1}">
+                <Ellipse Style="{StaticResource elpProfileBox_1}"/>
+            </Viewbox>
+            <StackPanel DockPanel.Dock="Left"
+                        Style="{StaticResource splProfileBox_2}">
+                <TextBlock Style="{StaticResource tblProfileBox_1}"
+                           Text="{Binding CurrentLogin.Name}"/>
+                <Rectangle Style="{StaticResource rctProfileBox_1}"/>
+                <TextBlock Style="{StaticResource tblProfileBox_1}"
+                           Text="{Binding CurrentLogin.Accessibility.Name}"/>
+            </StackPanel>
+        </DockPanel>
+
+        <Rectangle Style="{StaticResource rctProfileBox_2}"/>
+
+        <DockPanel LastChildFill="False"
+                   Style="{StaticResource dplProfileBox_2}">
+            <Button DockPanel.Dock="Left" 
+                    Style="{StaticResource btnProfileBox_1}"
+                    Content="Settings"
+                    Click="ManageProfile_Clicked"/>
+            <Button DockPanel.Dock="Right"
+                    Style="{StaticResource btnProfileBox_1}"
+                    Content="Log Out"
+                    Click="Logout_Clicked"/>
+        </DockPanel>
+
+    </StackPanel>
+</UserControl>

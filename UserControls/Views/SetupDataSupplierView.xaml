@@ -1,0 +1,297 @@
+﻿<UserControl x:Class="WelldonePOS.UserControls.Views.SetupDataSupplierView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:h="clr-namespace:WelldonePOS.Helpers"
+             xmlns:m="clr-namespace:WelldonePOS.Models.Misc">
+    <UserControl.CommandBindings>
+        <CommandBinding Command="m:UICommands.SaveSupplier" 
+                        CanExecute="Save_CanExecute" 
+                        Executed="Save_Executed"/>
+    </UserControl.CommandBindings>
+    
+    <UserControl.Resources>
+        <CollectionViewSource x:Key="supplierSource"
+                              Source="{Binding CurrentSupplierCollection}"/>
+    </UserControl.Resources>
+
+    <DockPanel Style="{StaticResource dplMainContainer}">
+
+        <Border DockPanel.Dock="Top"
+                Style="{StaticResource bdrHeaderHeavy}">
+            <DockPanel LastChildFill="False">
+                <TextBlock DockPanel.Dock="Left"
+                           Style="{StaticResource tblHeader2}"
+                           Text="Setup Data Supplier"/>
+                <StackPanel DockPanel.Dock="Right">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Style="{StaticResource tblHeader2}" 
+                                   Text="Filter : "/>
+                        <ComboBox Style="{StaticResource cbbFilter}"
+                                  IsEnabled="{Binding IsIdle}"
+                                  ItemsSource="{Binding Source={StaticResource supplierFilterOptions}}"
+                                  SelectedIndex="0"/>
+                        <ComboBox Style="{StaticResource cbbStatus}"
+                                  IsEnabled="{Binding IsIdle}"
+                                  ItemsSource="{Binding Source={StaticResource statusFilterOptions}}"
+                                  SelectedIndex="0"/>
+                        <TextBox Style="{StaticResource txbFilter}"
+                                 IsEnabled="{Binding IsIdle}"
+                                 TextChanged="Filter_TextChanged"/>
+                    </StackPanel>
+                    <DockPanel LastChildFill="False">
+                        <TextBlock DockPanel.Dock="Right" 
+                                   Style="{StaticResource tblHeader1}"
+                                   Text=" supplier."/>
+                        <TextBlock DockPanel.Dock="Right" 
+                                   Style="{StaticResource tblHeader1}"
+                                   Text="{Binding CurrentSupplierCollection.Count}"/>
+                        <TextBlock DockPanel.Dock="Right" 
+                                   Style="{StaticResource tblHeader1}"
+                                   Text="Menampilkan "/>
+                    </DockPanel>
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <DockPanel DockPanel.Dock="Bottom" 
+                   LastChildFill="False">
+            <StackPanel DockPanel.Dock="Left"
+                        Style="{StaticResource splButtonGroup}"
+                        IsEnabled="{Binding IsIdle}">
+                <Button Content="Tambah"
+                        Style="{StaticResource btnAction}"
+                        IsEnabled="{Binding Presenter.CurrentLogin.Accessibility.Rights[37]}"
+                        Click="Add_Click"/>
+                <Button Content="Edit"
+                        Style="{StaticResource btnAction}"
+                        IsEnabled="{Binding Presenter.CurrentLogin.Accessibility.Rights[38]}"
+                        Click="Edit_Click"/>
+                <Button Content="Hapus"
+                        Style="{StaticResource btnAction}"
+                        IsEnabled="{Binding Presenter.CurrentLogin.Accessibility.Rights[39]}"
+                        Click="Delete_Click"/>
+            </StackPanel>
+            <StackPanel DockPanel.Dock="Right"
+                        Style="{StaticResource splButtonGroup}"
+                        IsEnabled="{Binding IsIdle}">
+                <Button Content="Tutup"
+                        Style="{StaticResource btnAction}"
+                        Click="Close_Click"/>
+            </StackPanel>
+        </DockPanel>
+
+        <Border Style="{StaticResource bdrContentHeavy}">
+            <DockPanel>
+                <DockPanel x:Name="detailPanel" 
+                           DockPanel.Dock="Right"
+                           Style="{StaticResource dplDetailPanel}">
+                    <Border DockPanel.Dock="Top"
+                            Style="{StaticResource bdrHeaderLight}">
+                        <TextBlock Text="Setup Supplier"/>
+                    </Border>
+                    <StackPanel DockPanel.Dock="Bottom"
+                                Style="{StaticResource splButtonGroup}">
+                        <Button Content="Simpan"
+                                Style="{StaticResource btnAction}"
+                                Command="m:UICommands.SaveSupplier"/>
+                        <Button Content="Batal"
+                                Style="{StaticResource btnAction}"
+                                Click="CloseDetail_Click"/>
+                    </StackPanel>
+                    <ScrollViewer VerticalScrollBarVisibility="Visible">
+                        <Grid Style="{StaticResource grdDetailPanel}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="20"/>
+                                <ColumnDefinition Width="200"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <Label Grid.Column="0"
+                                   Grid.Row="0"
+                                   Content="Nama Supplier"/>
+                            <Label Grid.Column="1"
+                                   Grid.Row="0"
+                                   Content=":"/>
+                            <TextBox Grid.Column="2"
+                                     Grid.ColumnSpan="2"
+                                     Grid.Row="0"
+                                     MaxLength="50"
+                                     Style="{StaticResource txbDetail}">
+                                <TextBox.Text>
+                                    <Binding Path="CurrentSupplierTemp.Name" 
+                                             UpdateSourceTrigger="PropertyChanged">
+                                        <Binding.ValidationRules>
+                                            <h:ValidationHelper Type="Supplier" 
+                                                                Property="Name"/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                            <Label Grid.Column="0"
+                                   Grid.Row="1"
+                                   Content="Telepon"/>
+                            <Label Grid.Column="1"
+                                   Grid.Row="1"
+                                   Content=":"/>
+                            <Label Grid.Column="2"
+                                   Grid.Row="1"
+                                   Content="1."/>
+                            <TextBox Grid.Column="3"
+                                     Grid.Row="1"
+                                     MaxLength="15"
+                                     Style="{StaticResource txbDetail}"
+                                     PreviewKeyDown="NumericKey_PreviewKeyDown">
+                                <TextBox.Text>
+                                    <Binding Path="CurrentSupplierTemp.Phone1" 
+                                             UpdateSourceTrigger="PropertyChanged">
+                                        <Binding.ValidationRules>
+                                            <h:ValidationHelper Type="Supplier" 
+                                                                Property="Phone1"/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                            <Label Grid.Column="2"
+                                   Grid.Row="2"
+                                   Content="2."/>
+                            <TextBox Grid.Column="3"
+                                     Grid.Row="2"
+                                     MaxLength="15"
+                                     Style="{StaticResource txbDetail}"
+                                     Text="{Binding CurrentSupplierTemp.Phone2}"
+                                     PreviewKeyDown="NumericKey_PreviewKeyDown"/>
+                            <Label Grid.Column="0"
+                                   Grid.Row="3"
+                                   Content="Email"/>
+                            <Label Grid.Column="1"
+                                   Grid.Row="3"
+                                   Content=":"/>
+                            <TextBox Grid.Column="2"
+                                     Grid.ColumnSpan="2"
+                                     Grid.Row="3"
+                                     MaxLength="50"
+                                     Style="{StaticResource txbDetail}"
+                                     Text="{Binding CurrentSupplierTemp.Email}"/>
+                            <Label Grid.Column="0"
+                                   Grid.Row="4"
+                                   Content="Alamat"/>
+                            <Label Grid.Column="1"
+                                   Grid.Row="4"
+                                   Content=":"/>
+                            <Label Grid.Column="2"
+                                   Grid.Row="4"
+                                   Content="1."/>
+                            <TextBox Grid.Column="3"
+                                     Grid.Row="4"
+                                     MaxLength="75"
+                                     Style="{StaticResource txbDetail}">
+                                <TextBox.Text>
+                                    <Binding Path="CurrentSupplierTemp.Address1" 
+                                             UpdateSourceTrigger="PropertyChanged">
+                                        <Binding.ValidationRules>
+                                            <h:ValidationHelper Type="Supplier" 
+                                                                Property="Address1"/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                            <Label Grid.Column="2"
+                                   Grid.Row="5"
+                                   Content="2."/>
+                            <TextBox Grid.Column="3"
+                                     Grid.Row="5"
+                                     MaxLength="75"
+                                     Style="{StaticResource txbDetail}"
+                                     Text="{Binding CurrentSupplierTemp.Address2}"/>
+                            <Label Grid.Column="0"
+                                   Grid.Row="6"
+                                   Content="Kota"/>
+                            <Label Grid.Column="1"
+                                   Grid.Row="6"
+                                   Content=":"/>
+                            <TextBox Grid.Column="2"
+                                     Grid.ColumnSpan="2"
+                                     Grid.Row="6"
+                                     MaxLength="15"
+                                     Style="{StaticResource txbDetail}"
+                                     Text="{Binding CurrentSupplierTemp.City}"/>
+                            <Label Grid.Column="0"
+                                   Grid.Row="7"
+                                   Content="Status"/>
+                            <Label Grid.Column="1"
+                                   Grid.Row="7"
+                                   Content=":"/>
+                            <StackPanel Grid.Column="2"
+                                        Grid.ColumnSpan="2"
+                                        Grid.Row="7">
+                                <RadioButton GroupName="Status"
+                                             Content="Aktif"
+                                             IsChecked="{Binding CurrentSupplierTemp.Status, Mode=TwoWay, Converter={StaticResource boolStatus_to_checkstate}, ConverterParameter=true}"/>
+                                <RadioButton GroupName="Status"
+                                             Content="Non Aktif"
+                                             IsChecked="{Binding CurrentSupplierTemp.Status, Mode=TwoWay, Converter={StaticResource boolStatus_to_checkstate}, ConverterParameter=false}"/>
+                            </StackPanel>
+                        </Grid>
+                    </ScrollViewer>
+                </DockPanel>
+                <ListView IsEnabled="{Binding IsIdle}"
+                          ItemsSource="{Binding Source={StaticResource supplierSource}}"
+                          ItemContainerStyle="{StaticResource lviDefault}">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Pilih">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <CheckBox Style="{StaticResource ckbSelect}"
+                                                  Checked="Select_CheckedChanged"
+                                                  Unchecked="Deselect_CheckedChanged"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="Nama Supplier"
+                                            DisplayMemberBinding="{Binding Name}"/>
+                            <GridViewColumn Header="Telepon 1"
+                                            DisplayMemberBinding="{Binding Phone1}"/>
+                            <GridViewColumn Header="Telepon 2"
+                                            DisplayMemberBinding="{Binding Phone2}"/>
+                            <GridViewColumn Header="Email"
+                                            DisplayMemberBinding="{Binding Email}"/>
+                            <GridViewColumn Header="Alamat 1">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Address1}"
+                                                   TextWrapping="Wrap"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="Alamat 2">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Address2}"
+                                                   TextWrapping="Wrap"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="Kota"
+                                            DisplayMemberBinding="{Binding City}"/>
+                            <GridViewColumn Header="Status"
+                                            DisplayMemberBinding="{Binding Status, Converter={StaticResource boolStatus_to_string}}"/>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </DockPanel>
+        </Border>
+
+    </DockPanel>
+</UserControl>

@@ -1,0 +1,33 @@
+﻿<UserControl x:Class="WelldonePOS.UserControls.Shells.AppShell"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:uc="clr-namespace:WelldonePOS.UserControls.Misc">
+    <Border Style="{StaticResource bdrShells}">
+        <DockPanel>
+
+            <uc:AppHeader DockPanel.Dock="Top"/>
+
+            <StatusBar DockPanel.Dock="Bottom"
+                       Tag="{Binding StatusText}"
+                       Style="{StaticResource sbrAppShell_1}">
+                <StatusBarItem Tag="{Binding CurrentDateTime}"
+                               Style="{DynamicResource sbiAppShell_1}"/>
+            </StatusBar>
+
+            <DockPanel DockPanel.Dock="Left" 
+                       Style="{StaticResource dplAppShell_1}">
+                <ScrollViewer VerticalScrollBarVisibility="Visible">
+                    <uc:AppMenu/>
+                </ScrollViewer>
+            </DockPanel>
+
+            <Grid>
+                <TabControl x:Name="contentTabs"
+                            Style="{StaticResource tbcAppShell_1}"/>
+                <uc:ProfileBox Style="{StaticResource uscProfileBox_1}" 
+                               Visibility="{Binding ProfileBoxState, Converter={StaticResource bool_to_visibility}}"/>
+            </Grid>
+
+        </DockPanel>
+    </Border>
+</UserControl>

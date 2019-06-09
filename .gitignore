@@ -1,0 +1,12 @@
+# ============ #
+# VS generated #
+# ============ #
+
+/[Oo]bj/
+/[Rr]esources/
+/[Bb]in/
+
+*.csproj
+*.user
+*.pfx
+*.tmp

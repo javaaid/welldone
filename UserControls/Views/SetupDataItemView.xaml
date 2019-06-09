@@ -1,0 +1,1133 @@
+﻿<UserControl x:Class="WelldonePOS.UserControls.Views.SetupDataItemView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:h="clr-namespace:WelldonePOS.Helpers"
+             xmlns:e="clr-namespace:WelldonePOS.Models.Enums"
+             xmlns:m="clr-namespace:WelldonePOS.Models.Misc">
+    <UserControl.CommandBindings>
+        <CommandBinding Command="m:UICommands.ReplaceCategory" 
+                        CanExecute="ReplaceCategory_CanExecute" 
+                        Executed="ReplaceCategory_Executed"/>
+        <CommandBinding Command="m:UICommands.SaveUnitOfPurchase"
+                        CanExecute="SaveUnitOfPurchase_CanExecute"
+                        Executed="SaveUnitOfPurchase_Executed"/>
+        <CommandBinding Command="m:UICommands.SaveUnitOfSales" 
+                        CanExecute="SaveUnitOfSales_CanExecute" 
+                        Executed="SaveUnitOfSales_Executed"/>
+        <CommandBinding Command="m:UICommands.SaveStock"
+                        CanExecute="SaveStock_CanExecute"
+                        Executed="SaveStock_Executed"/>
+        <CommandBinding Command="m:UICommands.SaveItem" 
+                        CanExecute="SaveItem_CanExecute" 
+                        Executed="SaveItem_Executed"/>
+    </UserControl.CommandBindings>
+    
+    <UserControl.Resources>
+        <CollectionViewSource x:Key="itemSource"
+                              Source="{Binding CurrentItemCollection}"/>
+        <CollectionViewSource x:Key="categorySource"
+                              Source="{Binding CurrentCategoryCollection}"/>
+        <CollectionViewSource x:Key="stockSource"
+                              Source="{Binding CurrentStockCollection}"/>
+        <CollectionViewSource x:Key="uopSource"
+                              Source="{Binding CurrentUnitOfPurchaseCollection}"/>
+        <CollectionViewSource x:Key="uosSource"
+                              Source="{Binding CurrentUnitOfSalesCollection}"/>
+    </UserControl.Resources>
+
+    <DockPanel Style="{StaticResource dplMainContainer}">
+
+        <Border DockPanel.Dock="Top"
+                Style="{StaticResource bdrHeaderHeavy}">
+            <DockPanel LastChildFill="False">
+                <TextBlock DockPanel.Dock="Left"
+                           Style="{StaticResource tblHeader2}" 
+                           Text="Setup Data Barang"/>
+                <StackPanel DockPanel.Dock="Right">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Style="{StaticResource tblHeader2}" 
+                                   Text="Filter : "/>
+                        <ComboBox Style="{StaticResource cbbFilter}"
+                                  IsEnabled="{Binding IsItemIdle}"
+                                  ItemsSource="{Binding Source={StaticResource itemFilterOptions}}"
+                                  SelectedIndex="0"/>
+                        <ComboBox Style="{StaticResource cbbStatus}"
+                                  IsEnabled="{Binding IsItemIdle}"
+                                  ItemsSource="{Binding Source={StaticResource statusFilterOptions}}"
+                                  SelectedIndex="0"/>
+                        <TextBox Style="{StaticResource txbFilter}"
+                                 IsEnabled="{Binding IsItemIdle}"
+                                 TextChanged="Filter_TextChanged"/>
+                    </StackPanel>
+                    <DockPanel LastChildFill="False">
+                        <TextBlock DockPanel.Dock="Right" 
+                                   Style="{StaticResource tblHeader1}"
+                                   Text=" barang."/>
+                        <TextBlock DockPanel.Dock="Right" 
+                                   Style="{StaticResource tblHeader1}"
+                                   Text="{Binding CurrentItemCollection.Count}"/>
+                        <TextBlock DockPanel.Dock="Right" 
+                                   Style="{StaticResource tblHeader1}"
+                                   Text="Menampilkan "/>
+                    </DockPanel>
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <DockPanel DockPanel.Dock="Bottom" 
+                   LastChildFill="False">
+            <StackPanel DockPanel.Dock="Left"
+                        Style="{StaticResource splButtonGroup}"
+                        IsEnabled="{Binding IsItemIdle}">
+                <Button Content="Tambah"
+                        Style="{StaticResource btnAction}"
+                        IsEnabled="{Binding Presenter.CurrentLogin.Accessibility.Rights[29]}"
+                        Click="AddItem_Click"/>
+                <Button Content="Edit Barang"
+                        Style="{StaticResource btnAction}"
+                        IsEnabled="{Binding Presenter.CurrentLogin.Accessibility.Rights[30]}"
+                        Click="EditItem_Click"/>
+                <Button Content="Edit Persediaan"
+                        Style="{StaticResource btnAction}"
+                        IsEnabled="{Binding Presenter.CurrentLogin.Accessibility.Rights[30]}"
+                        Click="EditStocks_Click"/>
+                <Button Content="Edit Satuan"
+                        Style="{StaticResource btnAction}"
+                        IsEnabled="{Binding Presenter.CurrentLogin.Accessibility.Rights[30]}"
+                        Click="EditUnits_Click"/>
+                <Button Content="Hapus Barang"
+                        Style="{StaticResource btnAction}"
+                        IsEnabled="{Binding Presenter.CurrentLogin.Accessibility.Rights[31]}"
+                        Click="DeleteItem_Click"/>
+                <Button Content="Migrasi Kategori"
+                        Style="{StaticResource btnAction}"
+                        IsEnabled="{Binding Presenter.CurrentLogin.Accessibility.Rights[30]}"
+                        Click="GroupMigration_Click"/>
+            </StackPanel>
+            <StackPanel DockPanel.Dock="Right"
+                        Style="{StaticResource splButtonGroup}"
+                        IsEnabled="{Binding IsItemIdle}">
+                <Button Content="Tutup"
+                        Style="{StaticResource btnAction}"
+                        Click="Close_Click"/>
+            </StackPanel>
+        </DockPanel>
+
+        <Border Style="{StaticResource bdrContentHeavy}">
+            <DockPanel>
+                <DockPanel x:Name="itemDetailPanel" 
+                           DockPanel.Dock="Right"
+                           Style="{StaticResource dplDetailPanel}">
+                    <Border DockPanel.Dock="Top"
+                            Style="{StaticResource bdrHeaderLight}">
+                        <TextBlock DockPanel.Dock="Left"
+                                   Text="Setup Barang"/>
+                    </Border>
+                    <StackPanel DockPanel.Dock="Bottom"
+                                Style="{StaticResource splButtonGroup}">
+                        <Button Content="Simpan"
+                                Style="{StaticResource btnAction}"
+                                Command="m:UICommands.SaveItem"/>
+                        <Button Content="Batal"
+                                Style="{StaticResource btnAction}"
+                                Click="CloseItemDetail_Click"/>
+                    </StackPanel>
+                    <ScrollViewer VerticalScrollBarVisibility="Visible">
+                        <Grid Style="{StaticResource grdDetailPanel}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="275"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <Label Grid.Column="0"
+                                   Grid.Row="0"
+                                   Content="Nama Barang"/>
+                            <Label Grid.Column="1"
+                                   Grid.Row="0"
+                                   Content=":"/>
+                            <TextBox Grid.Column="2"
+                                     Grid.Row="0"
+                                     MaxLength="75"
+                                     Style="{StaticResource txbDetail}">
+                                <TextBox.Text>
+                                    <Binding Path="CurrentItemTemp.Name" 
+                                             UpdateSourceTrigger="PropertyChanged">
+                                        <Binding.ValidationRules>
+                                            <h:ValidationHelper Type="Item" 
+                                                                Property="Name"/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                            <Label Grid.Column="0"
+                                   Grid.Row="1"
+                                   Content="Kategori"/>
+                            <Label Grid.Column="1"
+                                   Grid.Row="1"
+                                   Content=":"/>
+                            <ComboBox Grid.Column="2"
+                                      Grid.Row="1"
+                                      Style="{StaticResource cbbDetail}"
+                                      ItemsSource="{Binding Source={StaticResource categorySource}}"
+                                      SelectedItem="{Binding CurrentItemTemp.Group}"/>
+                            <Label Grid.Column="0"
+                                   Grid.Row="2"
+                                   Content="Satuan Referensi"/>
+                            <Label Grid.Column="1"
+                                   Grid.Row="2"
+                                   Content=":"/>
+                            <TextBox Grid.Column="2"
+                                     Grid.Row="2"
+                                     MaxLength="15"
+                                     Style="{StaticResource txbDetail}">
+                                <TextBox.Text>
+                                    <Binding Path="CurrentItemTemp.RefUnit" 
+                                             UpdateSourceTrigger="PropertyChanged" 
+                                             Converter="{StaticResource string_to_upperstring}">
+                                        <Binding.ValidationRules>
+                                            <h:ValidationHelper Type="Item" 
+                                                                Property="RefUnit"/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                            <Label Grid.Column="0"
+                                   Grid.Row="3"
+                                   Content="Batas Minimum Laba"/>
+                            <Label Grid.Column="1"
+                                   Grid.Row="3"
+                                   Content=":"/>
+                            <Grid Grid.Column="2"
+                                  Grid.Row="3">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="6*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <Label Grid.Column="0"
+                                       Grid.Row="0"
+                                       Content="Rp. "/>
+                                <TextBox Grid.Column="1"
+                                         Grid.Row="0"
+                                         MaxLength="14"
+                                         Style="{StaticResource txbDetail}"
+                                         PreviewKeyDown="NumericKey_PreviewKeyDown">
+                                    <TextBox.Text>
+                                        <Binding Path="CurrentItemTemp.MinimumProfit" 
+                                                 UpdateSourceTrigger="PropertyChanged"
+                                                 StringFormat="0">
+                                            <Binding.ValidationRules>
+                                                <h:ValidationHelper Type="Item" 
+                                                                    Property="MinimumProfit"/>
+                                            </Binding.ValidationRules>
+                                        </Binding>
+                                    </TextBox.Text>
+                                </TextBox>
+                            </Grid>
+                            <Label Grid.Column="0"
+                                   Grid.Row="4"
+                                   Content="Batas Minimum Persediaan"/>
+                            <Label Grid.Column="1"
+                                   Grid.Row="4"
+                                   Content=":"/>
+                            <TextBox Grid.Column="2"
+                                     Grid.Row="4"
+                                     MaxLength="9"
+                                     Style="{StaticResource txbDetail}"
+                                     PreviewKeyDown="NumericKey_PreviewKeyDown">
+                                <TextBox.Text>
+                                    <Binding Path="CurrentItemTemp.SafetyStockPortion" 
+                                             UpdateSourceTrigger="PropertyChanged">
+                                        <Binding.ValidationRules>
+                                            <h:ValidationHelper Type="Item" 
+                                                                Property="SafetyStockPortion"/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                            <Label Grid.Column="0"
+                                   Grid.Row="5"
+                                   Content="Status"/>
+                            <Label Grid.Column="1"
+                                   Grid.Row="5"
+                                   Content=":"/>
+                            <StackPanel Grid.Column="2"
+                                        Grid.Row="5">
+                                <RadioButton GroupName="ItemStatus"
+                                             Content="Aktif"
+                                             IsChecked="{Binding CurrentItemTemp.Status, Mode=TwoWay, Converter={StaticResource boolStatus_to_checkstate}, ConverterParameter=true}"/>
+                                <RadioButton GroupName="ItemStatus"
+                                             Content="Non Aktif"
+                                             IsChecked="{Binding CurrentItemTemp.Status, Mode=TwoWay, Converter={StaticResource boolStatus_to_checkstate}, ConverterParameter=false}"/>
+                            </StackPanel>
+                        </Grid>
+                    </ScrollViewer>
+                </DockPanel>
+                <DockPanel x:Name="stockDetailPanel" 
+                           DockPanel.Dock="Right"
+                           Style="{StaticResource dplDetailPanel}">
+                    <Border DockPanel.Dock="Top"
+                            Style="{StaticResource bdrHeaderLight}">
+                        <TextBlock Text="Setup Saldo Awal"/>
+                    </Border>
+                    <StackPanel DockPanel.Dock="Bottom"
+                                Style="{StaticResource splButtonGroup}">
+                        <Button Content="Simpan"
+                                Style="{StaticResource btnAction}"
+                                Command="m:UICommands.SaveStock"/>
+                        <Button Content="Batal"
+                                Style="{StaticResource btnAction}"
+                                Click="CloseStockDetail_Click"/>
+                    </StackPanel>
+                    <ScrollViewer VerticalScrollBarVisibility="Visible">
+                        <Grid Style="{StaticResource grdDetailPanel}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="250"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <Label Grid.Column="0"
+                                   Grid.Row="0">
+                                <Label.Content>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="Jumlah ("/>
+                                        <TextBlock Text="{Binding CurrentItem.RefUnit}"/>
+                                        <TextBlock Text=")"/>
+                                    </StackPanel>
+                                </Label.Content>
+                            </Label>
+                            <Label Grid.Column="1"
+                                   Grid.Row="0"
+                                   Content=":"/>
+                            <TextBox Grid.Column="2"
+                                     Grid.Row="0"
+                                     MaxLength="9"
+                                     Style="{StaticResource txbDetail}"
+                                     PreviewKeyDown="NumericKey_PreviewKeyDown">
+                                <TextBox.Text>
+                                    <Binding Path="CurrentStockTemp.InitialQty" 
+                                             UpdateSourceTrigger="PropertyChanged">
+                                        <Binding.ValidationRules>
+                                            <h:ValidationHelper Type="Stock"
+                                                                Property="InitialQty"/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                            <Label Grid.Column="0"
+                                   Grid.Row="1">
+                                <Label.Content>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="Harga beli per "/>
+                                        <TextBlock Text="{Binding CurrentItem.RefUnit}"/>
+                                    </StackPanel>
+                                </Label.Content>
+                            </Label>
+                            <Label Grid.Column="1"
+                                   Grid.Row="1"
+                                   Content=":"/>
+                            <Grid Grid.Column="2"
+                                  Grid.Row="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="6*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <Label Grid.Column="0"
+                                       Grid.Row="0"
+                                       Content="Rp. "/>
+                                <TextBox Grid.Column="1"
+                                         Grid.Row="0"
+                                         MaxLength="14"
+                                         Style="{StaticResource txbDetail}"
+                                         PreviewKeyDown="NumericKey_PreviewKeyDown">
+                                    <TextBox.Text>
+                                        <Binding Path="CurrentStockTemp.PriceOfPurchase" 
+                                                 UpdateSourceTrigger="PropertyChanged" 
+                                                 StringFormat="0">
+                                            <Binding.ValidationRules>
+                                                <h:ValidationHelper Type="Stock" 
+                                                                    Property="PriceOfPurchase"/>
+                                            </Binding.ValidationRules>
+                                        </Binding>
+                                    </TextBox.Text>
+                                </TextBox>
+                            </Grid>
+                        </Grid>
+                    </ScrollViewer>
+                </DockPanel>
+                <DockPanel x:Name="unitOfPurchaseDetailPanel"
+                           DockPanel.Dock="Right"
+                           Style="{StaticResource dplDetailPanel}">
+                    <Border DockPanel.Dock="Top"
+                            Style="{StaticResource bdrHeaderLight}">
+                        <TextBlock DockPanel.Dock="Left" 
+                                   Text="Setup Satuan Beli"/>
+                    </Border>
+                    <StackPanel DockPanel.Dock="Bottom"
+                                Style="{StaticResource splButtonGroup}">
+                        <Button Content="Simpan"
+                                Style="{StaticResource btnAction}"
+                                Command="m:UICommands.SaveUnitOfPurchase"/>
+                        <Button Content="Batal"
+                                Style="{StaticResource btnAction}"
+                                Click="CloseUnitOfPurchaseDetail_Click"/>
+                    </StackPanel>
+                    <ScrollViewer VerticalScrollBarVisibility="Visible">
+                        <Grid Style="{StaticResource grdDetailPanel}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="250"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <Label Grid.Column="0"
+                                   Grid.Row="0"
+                                   Content="Kode Barang"/>
+                            <Label Grid.Column="1"
+                                   Grid.Row="0"
+                                   Content=":"/>
+                            <TextBox Grid.Column="2"
+                                     Grid.Row="0"
+                                     MaxLength="25"
+                                     Style="{StaticResource txbDetail}"
+                                     Text="{Binding CurrentUnitOfPurchaseTemp.Code}"/>
+                            <Label Grid.Column="0"
+                                   Grid.Row="1"
+                                   Content="Barcode"/>
+                            <Label Grid.Column="1"
+                                   Grid.Row="1"
+                                   Content=":"/>
+                            <TextBox Grid.Column="2"
+                                     Grid.Row="1"
+                                     MaxLength="13"
+                                     Style="{StaticResource txbDetail}"
+                                     Text="{Binding CurrentUnitOfPurchaseTemp.Barcode}"
+                                     PreviewKeyDown="NumericKey_PreviewKeyDown"/>
+                            <Label Grid.Column="0"
+                                   Grid.Row="2"
+                                   Content="Nama Satuan"/>
+                            <Label Grid.Column="1"
+                                   Grid.Row="2"
+                                   Content=":"/>
+                            <TextBox Grid.Column="2"
+                                     Grid.Row="2"
+                                     MaxLength="15"
+                                     Style="{StaticResource txbDetail}">
+                                <TextBox.Text>
+                                    <Binding Path="CurrentUnitOfPurchaseTemp.Name" 
+                                             UpdateSourceTrigger="PropertyChanged" 
+                                             Converter="{StaticResource string_to_upperstring}">
+                                        <Binding.ValidationRules>
+                                            <h:ValidationHelper Type="UnitOfPurchase" 
+                                                                Property="Name"/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                            <Label Grid.Column="0"
+                                   Grid.Row="3">
+                                <Label.Content>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="Jumlah ("/>
+                                        <TextBlock Text="{Binding CurrentItem.RefUnit}"/>
+                                        <TextBlock Text=")"/>
+                                    </StackPanel>
+                                </Label.Content>
+                            </Label>
+                            <Label Grid.Column="1"
+                                   Grid.Row="3"
+                                   Content=":"/>
+                            <TextBox Grid.Column="2"
+                                     Grid.Row="3"
+                                     MaxLength="9"
+                                     Style="{StaticResource txbDetail}"
+                                     PreviewKeyDown="NumericKey_PreviewKeyDown"
+                                     TextChanged="QtyPerUnit_TextChanged">
+                                <TextBox.Text>
+                                    <Binding Path="CurrentUnitOfPurchaseTemp.QtyPerUOP" 
+                                             UpdateSourceTrigger="PropertyChanged">
+                                        <Binding.ValidationRules>
+                                            <h:ValidationHelper Type="UnitOfPurchase" 
+                                                                Property="QtyPerUOP"/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                            <Label Grid.Column="0"
+                                   Grid.Row="4"
+                                   Content="Jumlah Persediaan"/>
+                            <Label Grid.Column="1"
+                                   Grid.Row="4"
+                                   Content=":"/>
+                            <TextBox Grid.Column="2"
+                                     Grid.Row="4"
+                                     MaxLength="6"
+                                     Style="{StaticResource txbDetail}"
+                                     Text="{Binding CurrentStockPreview}"
+                                     IsEnabled="False"/>
+                            <Label Grid.Column="0"
+                                   Grid.Row="6"
+                                   Content="Status"/>
+                            <Label Grid.Column="1"
+                                   Grid.Row="6"
+                                   Content=":"/>
+                            <StackPanel Grid.Column="2"
+                                        Grid.Row="6">
+                                <RadioButton GroupName="UOPStatus"
+                                             Content="Aktif"
+                                             IsChecked="{Binding CurrentUnitOfPurchaseTemp.Status, Mode=TwoWay, Converter={StaticResource boolStatus_to_checkstate}, ConverterParameter=true}"/>
+                                <RadioButton GroupName="UOPStatus"
+                                             Content="Non Aktif"
+                                             IsChecked="{Binding CurrentUnitOfPurchaseTemp.Status, Mode=TwoWay, Converter={StaticResource boolStatus_to_checkstate}, ConverterParameter=false}"/>
+                            </StackPanel>
+                        </Grid>
+                    </ScrollViewer>
+                </DockPanel>
+                <DockPanel x:Name="unitOfSalesDetailPanel"
+                           DockPanel.Dock="Right"
+                           Style="{StaticResource dplDetailPanel}">
+                    <Border DockPanel.Dock="Top"
+                            Style="{StaticResource bdrHeaderLight}">
+                        <TextBlock DockPanel.Dock="Left" 
+                                   Text="Setup Satuan Jual"/>
+                    </Border>
+                    <StackPanel DockPanel.Dock="Bottom"
+                                Style="{StaticResource splButtonGroup}">
+                        <Button Content="Simpan"
+                                Style="{StaticResource btnAction}"
+                                Command="m:UICommands.SaveUnitOfSales"/>
+                        <Button Content="Batal"
+                                Style="{StaticResource btnAction}"
+                                Click="CloseUnitOfSalesDetail_Click"/>
+                    </StackPanel>
+                    <ScrollViewer VerticalScrollBarVisibility="Visible">
+                        <Grid Style="{StaticResource grdDetailPanel}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="250"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <Label Grid.Column="0"
+                                   Grid.Row="0"
+                                   Content="Kode Barang"/>
+                            <Label Grid.Column="1"
+                                   Grid.Row="0"
+                                   Content=":"/>
+                            <TextBox Grid.Column="2"
+                                     Grid.Row="0"
+                                     MaxLength="25"
+                                     Style="{StaticResource txbDetail}"
+                                     Text="{Binding CurrentUnitOfSalesTemp.Code}"/>
+                            <Label Grid.Column="0"
+                                   Grid.Row="1"
+                                   Content="Barcode"/>
+                            <Label Grid.Column="1"
+                                   Grid.Row="1"
+                                   Content=":"/>
+                            <TextBox Grid.Column="2"
+                                     Grid.Row="1"
+                                     MaxLength="13"
+                                     Style="{StaticResource txbDetail}"
+                                     Text="{Binding CurrentUnitOfSalesTemp.Barcode}"
+                                     PreviewKeyDown="NumericKey_PreviewKeyDown"/>
+                            <Label Grid.Column="0"
+                                   Grid.Row="2"
+                                   Content="Nama Satuan"/>
+                            <Label Grid.Column="1"
+                                   Grid.Row="2"
+                                   Content=":"/>
+                            <TextBox Grid.Column="2"
+                                     Grid.Row="2"
+                                     MaxLength="15"
+                                     Style="{StaticResource txbDetail}">
+                                <TextBox.Text>
+                                    <Binding Path="CurrentUnitOfSalesTemp.Name" 
+                                             UpdateSourceTrigger="PropertyChanged" 
+                                             Converter="{StaticResource string_to_upperstring}">
+                                        <Binding.ValidationRules>
+                                            <h:ValidationHelper Type="UnitOfSales" 
+                                                                Property="Name"/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                            <Label Grid.Column="0"
+                                   Grid.Row="3">
+                                <Label.Content>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="Jumlah ("/>
+                                        <TextBlock Text="{Binding CurrentItem.RefUnit}"/>
+                                        <TextBlock Text=")"/>
+                                    </StackPanel>
+                                </Label.Content>
+                            </Label>
+                            <Label Grid.Column="1"
+                                   Grid.Row="3"
+                                   Content=":"/>
+                            <TextBox Grid.Column="2"
+                                     Grid.Row="3"
+                                     MaxLength="9"
+                                     Style="{StaticResource txbDetail}"
+                                     PreviewKeyDown="NumericKey_PreviewKeyDown"
+                                     TextChanged="QtyPerUnit_TextChanged">
+                                <TextBox.Text>
+                                    <Binding Path="CurrentUnitOfSalesTemp.QtyPerUOS" 
+                                             UpdateSourceTrigger="PropertyChanged">
+                                        <Binding.ValidationRules>
+                                            <h:ValidationHelper Type="UnitOfSales" 
+                                                                Property="QtyPerUOS"/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                            <Label Grid.Column="0"
+                                   Grid.Row="4"
+                                   Content="Harga Jual Baku"/>
+                            <Label Grid.Column="1"
+                                   Grid.Row="4"
+                                   Content=":"/>
+                            <Grid Grid.Column="2"
+                                  Grid.Row="4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="6*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <Label Grid.Column="0"
+                                       Grid.Row="0"
+                                       Content="Rp. "/>
+                                <TextBox Grid.Column="1"
+                                         Grid.Row="0"
+                                         MaxLength="14"
+                                         Style="{StaticResource txbDetail}"
+                                         PreviewKeyDown="NumericKey_PreviewKeyDown">
+                                    <TextBox.Text>
+                                        <Binding Path="CurrentUnitOfSalesTemp.DefaultPriceOfSales" 
+                                                 UpdateSourceTrigger="PropertyChanged"
+                                                 StringFormat="0">
+                                            <Binding.ValidationRules>
+                                                <h:ValidationHelper Type="UnitOfSales" 
+                                                                    Property="DefaultPriceOfSales"/>
+                                            </Binding.ValidationRules>
+                                        </Binding>
+                                    </TextBox.Text>
+                                </TextBox>
+                            </Grid>
+                            <Label Grid.Column="0"
+                                   Grid.Row="5"
+                                   Content="Jumlah Persediaan"/>
+                            <Label Grid.Column="1"
+                                   Grid.Row="5"
+                                   Content=":"/>
+                            <TextBox Grid.Column="2"
+                                     Grid.Row="5"
+                                     MaxLength="6"
+                                     Style="{StaticResource txbDetail}"
+                                     Text="{Binding CurrentStockPreview}"
+                                     IsEnabled="False"/>
+                            <Label Grid.Column="0"
+                                   Grid.Row="6"
+                                   Content="Status"/>
+                            <Label Grid.Column="1"
+                                   Grid.Row="6"
+                                   Content=":"/>
+                            <StackPanel Grid.Column="2"
+                                        Grid.Row="6">
+                                <RadioButton GroupName="UOSStatus"
+                                             Content="Aktif"
+                                             IsChecked="{Binding CurrentUnitOfSalesTemp.Status, Mode=TwoWay, Converter={StaticResource boolStatus_to_checkstate}, ConverterParameter=true}"/>
+                                <RadioButton GroupName="UOSStatus"
+                                             Content="Non Aktif"
+                                             IsChecked="{Binding CurrentUnitOfSalesTemp.Status, Mode=TwoWay, Converter={StaticResource boolStatus_to_checkstate}, ConverterParameter=false}"/>
+                            </StackPanel>
+                        </Grid>
+                    </ScrollViewer>
+                </DockPanel>
+                <DockPanel x:Name="groupDetailPanel" 
+                           DockPanel.Dock="Right"
+                           Style="{StaticResource dplDetailPanel}">
+                    <Border DockPanel.Dock="Top"
+                            Style="{StaticResource bdrHeaderLight}">
+                        <TextBlock Text="Migrasi Kategori"/>
+                    </Border>
+                    <StackPanel DockPanel.Dock="Bottom"
+                                Style="{StaticResource splButtonGroup}">
+                        <Button Content="Simpan"
+                                Style="{StaticResource btnAction}"
+                                Command="m:UICommands.ReplaceCategory"/>
+                        <Button Content="Tutup"
+                                Style="{StaticResource btnAction}"
+                                Click="CloseGroupDetail_Click"/>
+                    </StackPanel>
+                    <ScrollViewer VerticalScrollBarVisibility="Visible">
+                        <DockPanel>
+                            <Grid DockPanel.Dock="Bottom"
+                                  Style="{StaticResource grdDetailPanel}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="150"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <Label Grid.Column="0"
+                                       Grid.Row="0"
+                                       Content="Kategori Baru"/>
+                                <Label Grid.Column="1"
+                                       Grid.Row="0"
+                                       Content=":"/>
+                                <ComboBox Grid.Column="2"
+                                          Grid.Row="0"
+                                          Style="{StaticResource cbbDetail}"
+                                          ItemsSource="{Binding Source={StaticResource categorySource}}"
+                                          DisplayMemberPath="Name"
+                                          SelectedValue="{Binding CurrentCategory}"/>
+                            </Grid>
+                            <ListView ItemsSource="{Binding CurrentItemCollectionTemp}"
+                                      ItemContainerStyle="{StaticResource lviDefault}">
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn Header="Nama Barang"
+                                                        DisplayMemberBinding="{Binding Name}"/>
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+                        </DockPanel>
+                    </ScrollViewer>
+                </DockPanel>
+                <DockPanel x:Name="stocksDetailPanel"
+                           DockPanel.Dock="Bottom"
+                           Style="{StaticResource dplDetailPanel}">
+                    <Border DockPanel.Dock="Top"
+                            Style="{StaticResource bdrHeaderLight}">
+                        <DockPanel LastChildFill="False">
+                            <TextBlock DockPanel.Dock="Left" 
+                                       Text="Setup Persediaan Barang"/>
+                            <TextBlock DockPanel.Dock="Right"
+                                       Style="{StaticResource tblHeader1}"
+                                       Text="]"/>
+                            <TextBlock DockPanel.Dock="Right"
+                                       Style="{StaticResource tblHeader1}"
+                                       Text="{Binding CurrentItem.Name}"/>
+                            <TextBlock DockPanel.Dock="Right"
+                                       Style="{StaticResource tblHeader1}"
+                                       Text="["/>
+                        </DockPanel>
+                    </Border>
+                    <StackPanel DockPanel.Dock="Bottom"
+                                Style="{StaticResource splButtonGroup}"
+                                IsEnabled="{Binding IsStocksIdle}">
+                        <Button Content="Tutup"
+                                Style="{StaticResource btnAction}"
+                                Click="CloseStocksDetail_Click"/>
+                    </StackPanel>
+                    <Grid DockPanel.Dock="Left" 
+                          Style="{StaticResource grdDetailPanel}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="150"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <Label Grid.Column="0"
+                               Grid.Row="0"
+                               Content="Kategori"/>
+                        <Label Grid.Column="1"
+                               Grid.Row="0"
+                               Content=":"/>
+                        <TextBox Grid.Column="2"
+                                 Grid.Row="0"
+                                 Style="{StaticResource txbDetail}"
+                                 Text="{Binding CurrentItem.Group.Name}"
+                                 IsEnabled="False"/>
+                        <Label Grid.Column="0"
+                               Grid.Row="1"
+                               Content="Satuan Referensi"/>
+                        <Label Grid.Column="1"
+                               Grid.Row="1"
+                               Content=":"/>
+                        <TextBox Grid.Column="2"
+                                 Grid.Row="1"
+                                 Style="{StaticResource txbDetail}"
+                                 Text="{Binding CurrentItem.RefUnit}"
+                                 IsEnabled="False"/>
+                        <Label Grid.Column="0"
+                               Grid.Row="2"
+                               Content="Jumlah Persediaan"/>
+                        <Label Grid.Column="1"
+                               Grid.Row="2"
+                               Content=":"/>
+                        <TextBox Grid.Column="2"
+                                 Grid.Row="2"
+                                 Style="{StaticResource txbDetail}"
+                                 Text="{Binding CurrentTotalStockPreview}"
+                                 IsEnabled="False"/>
+                        <Label Grid.Column="0"
+                               Grid.Row="3"
+                               Content="Status"/>
+                        <Label Grid.Column="1"
+                               Grid.Row="3"
+                               Content=":"/>
+                        <TextBox Grid.Column="2"
+                                 Grid.Row="3"
+                                 Style="{StaticResource txbDetail}"
+                                 Text="{Binding CurrentItem.Status, Converter={StaticResource boolStatus_to_string}}"
+                                 IsEnabled="False"/>
+                    </Grid>
+                    <DockPanel Style="{StaticResource dplMainContainer}">
+                        <StackPanel DockPanel.Dock="Bottom"
+                                    Style="{StaticResource splButtonGroup}"
+                                    IsEnabled="{Binding IsStocksIdle}">
+                            <Label Content="Saldo Awal :"/>
+                            <Button Content="Tambah"
+                                    Style="{StaticResource btnAction}"
+                                    Click="AddStock_Click"/>
+                            <Button Content="Hapus"
+                                    Style="{StaticResource btnAction}"
+                                    Click="DeleteStock_Click"/>
+                        </StackPanel>
+                        <ListView Height="100"
+                                  IsEnabled="{Binding IsStocksIdle}"
+                                  ItemsSource="{Binding Source={StaticResource stockSource}}"
+                                  ItemContainerStyle="{StaticResource lviDefault}">
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn Header="Tanggal Terima"
+                                                    DisplayMemberBinding="{Binding ReceptionDate, StringFormat={}{0:dd/MM/yyyy}}"/>
+                                    <GridViewColumn Header="Sumber"
+                                                    DisplayMemberBinding="{Binding Origin}"/>
+                                    <GridViewColumn Header="Jumlah Terima"
+                                                    DisplayMemberBinding="{Binding InitialQty}"/>
+                                    <GridViewColumn Header="Jumlah Tersedia"
+                                                    DisplayMemberBinding="{Binding CurrentQty}"/>
+                                    <GridViewColumn Header="Harga Beli"
+                                                    DisplayMemberBinding="{Binding PriceOfPurchase, StringFormat='Rp #,#'}"/>
+                                    <GridViewColumn Header="Status"
+                                                    DisplayMemberBinding="{Binding Status, Converter={StaticResource boolStatus_to_string}}"/>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                    </DockPanel>
+                </DockPanel>
+                <DockPanel x:Name="unitsDetailPanel"
+                           DockPanel.Dock="Bottom"
+                           Style="{StaticResource dplDetailPanel}">
+                    <Border DockPanel.Dock="Top"
+                            Style="{StaticResource bdrHeaderLight}">
+                        <DockPanel LastChildFill="False">
+                            <TextBlock DockPanel.Dock="Left" 
+                                       Text="Setup Satuan Barang"/>
+                            <TextBlock DockPanel.Dock="Right"
+                                       Style="{StaticResource tblHeader1}"
+                                       Text="]"/>
+                            <TextBlock DockPanel.Dock="Right"
+                                       Style="{StaticResource tblHeader1}"
+                                       Text="{Binding CurrentItem.Name}"/>
+                            <TextBlock DockPanel.Dock="Right"
+                                       Style="{StaticResource tblHeader1}"
+                                       Text="["/>
+                        </DockPanel>
+                    </Border>
+                    <StackPanel DockPanel.Dock="Bottom"
+                                Style="{StaticResource splButtonGroup}"
+                                IsEnabled="{Binding IsUnitsIdle}">
+                        <Button Content="Tutup"
+                                Style="{StaticResource btnAction}"
+                                Click="CloseUnitsDetail_Click"/>
+                    </StackPanel>
+                    <Grid DockPanel.Dock="Left" 
+                          Style="{StaticResource grdDetailPanel}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="150"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <Label Grid.Column="0"
+                               Grid.Row="0"
+                               Content="Kategori"/>
+                        <Label Grid.Column="1"
+                               Grid.Row="0"
+                               Content=":"/>
+                        <TextBox Grid.Column="2"
+                                 Grid.Row="0"
+                                 Style="{StaticResource txbDetail}"
+                                 Text="{Binding CurrentItem.Group.Name}"
+                                 IsEnabled="False"/>
+                        <Label Grid.Column="0"
+                               Grid.Row="1"
+                               Content="Satuan Referensi"/>
+                        <Label Grid.Column="1"
+                               Grid.Row="1"
+                               Content=":"/>
+                        <TextBox Grid.Column="2"
+                                 Grid.Row="1"
+                                 Style="{StaticResource txbDetail}"
+                                 Text="{Binding CurrentItem.RefUnit}"
+                                 IsEnabled="False"/>
+                        <Label Grid.Column="0"
+                               Grid.Row="2"
+                               Content="Jumlah Persediaan"/>
+                        <Label Grid.Column="1"
+                               Grid.Row="2"
+                               Content=":"/>
+                        <TextBox Grid.Column="2"
+                                 Grid.Row="2"
+                                 Style="{StaticResource txbDetail}"
+                                 Text="{Binding CurrentTotalStockPreview}"
+                                 IsEnabled="False"/>
+                        <Label Grid.Column="0"
+                               Grid.Row="3"
+                               Content="Status"/>
+                        <Label Grid.Column="1"
+                               Grid.Row="3"
+                               Content=":"/>
+                        <TextBox Grid.Column="2"
+                                 Grid.Row="3"
+                                 Style="{StaticResource txbDetail}"
+                                 Text="{Binding CurrentItem.Status, Converter={StaticResource boolStatus_to_string}}"
+                                 IsEnabled="False"/>
+                    </Grid>
+                    <TabControl Style="{StaticResource tbcAppShell_1}">
+                        <TabItem>
+                            <TabItem.Header>
+                                <HeaderedContentControl Content="Satuan Beli"
+                                                        Style="{StaticResource hccTabHeader}"/>
+                            </TabItem.Header>
+                            <DockPanel Style="{StaticResource dplMainContainer}">
+                                <StackPanel DockPanel.Dock="Bottom"
+                                            Style="{StaticResource splButtonGroup}"
+                                            IsEnabled="{Binding IsUnitsIdle}">
+                                    <Button Content="Tambah Satuan"
+                                            Style="{StaticResource btnAction}"
+                                            Click="AddUnitOfPurchase_Click"/>
+                                </StackPanel>
+                                <ListView Height="100"
+                                          IsEnabled="{Binding IsUnitsIdle}"
+                                          ItemsSource="{Binding Source={StaticResource uopSource}}"
+                                          ItemContainerStyle="{StaticResource lviDefault}">
+                                    <ListView.View>
+                                        <GridView>
+                                            <GridViewColumn Header="Edit">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <Button Style="{StaticResource btnDetail}"
+                                                                Click="UnitOfPurchaseDetail_Click"/>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                            <GridViewColumn Header="Kode Barang"
+                                                            DisplayMemberBinding="{Binding Code}"/>
+                                            <GridViewColumn Header="Barcode"
+                                                            DisplayMemberBinding="{Binding Barcode}"/>
+                                            <GridViewColumn Header="Nama Satuan"
+                                                            DisplayMemberBinding="{Binding Name}"/>
+                                            <GridViewColumn Header="Jumlah"
+                                                            DisplayMemberBinding="{Binding QtyPerUOP}"/>
+                                            <GridViewColumn Header="Status"
+                                                            DisplayMemberBinding="{Binding Status, Converter={StaticResource boolStatus_to_string}}"/>
+                                            <GridViewColumn Header="Hapus">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <Button Style="{StaticResource btnDelete}"
+                                                                Click="DeleteUnitOfPurchase_Click"/>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                        </GridView>
+                                    </ListView.View>
+                                </ListView>
+                            </DockPanel>
+                        </TabItem>
+                        <TabItem>
+                            <TabItem.Header>
+                                <HeaderedContentControl Content="Satuan Jual"
+                                                        Style="{StaticResource hccTabHeader}"/>
+                            </TabItem.Header>
+                            <DockPanel Style="{StaticResource dplMainContainer}">
+                                <StackPanel DockPanel.Dock="Bottom"
+                                            Style="{StaticResource splButtonGroup}"
+                                            IsEnabled="{Binding IsUnitsIdle}">
+                                    <Button Content="Tambah Satuan"
+                                            Style="{StaticResource btnAction}"
+                                            Click="AddUnitOfSales_Click"/>
+                                </StackPanel>
+                                <ListView Height="100"
+                                          IsEnabled="{Binding IsUnitsIdle}"
+                                          ItemsSource="{Binding Source={StaticResource uosSource}}"
+                                          ItemContainerStyle="{StaticResource lviDefault}">
+                                    <ListView.View>
+                                        <GridView>
+                                            <GridViewColumn Header="Edit">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <Button Style="{StaticResource btnDetail}"
+                                                                Click="UnitOfSalesDetail_Click"/>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                            <GridViewColumn Header="Kode Barang"
+                                                            DisplayMemberBinding="{Binding Code}"/>
+                                            <GridViewColumn Header="Barcode"
+                                                            DisplayMemberBinding="{Binding Barcode}"/>
+                                            <GridViewColumn Header="Nama Satuan"
+                                                            DisplayMemberBinding="{Binding Name}"/>
+                                            <GridViewColumn Header="Jumlah"
+                                                            DisplayMemberBinding="{Binding QtyPerUOS}"/>
+                                            <GridViewColumn Header="Harga Jual Baku"
+                                                            DisplayMemberBinding="{Binding DefaultPriceOfSales, StringFormat='Rp #,#'}"/>
+                                            <GridViewColumn Header="Status"
+                                                            DisplayMemberBinding="{Binding Status, Converter={StaticResource boolStatus_to_string}}"/>
+                                            <GridViewColumn Header="Hapus">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <Button Style="{StaticResource btnDelete}"
+                                                                Click="DeleteUnitOfSales_Click"/>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                        </GridView>
+                                    </ListView.View>
+                                </ListView>
+                            </DockPanel>
+                        </TabItem>
+                    </TabControl>
+
+                    <!--<DockPanel Style="{StaticResource dplMainContainer}">
+                        <StackPanel DockPanel.Dock="Bottom"
+                                    Style="{StaticResource splButtonGroup}">
+                            <Button Content="Tambah Satuan"
+                                    Style="{StaticResource btnAction}"
+                                    Click="AddUnit_Click"/>
+                        </StackPanel>
+                        <ListView MaxHeight="300"
+                                  IsEnabled="{Binding IsUnitsIdle}"
+                                  ItemsSource="{Binding Source={StaticResource uosSource}}"
+                                  ItemContainerStyle="{StaticResource lviDefault}">
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn Header="Edit">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Button Style="{StaticResource btnDetail}"
+                                                        Click="UnitDetail_Click"/>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                    <GridViewColumn Header="Kode Barang"
+                                                    DisplayMemberBinding="{Binding Code}"/>
+                                    <GridViewColumn Header="Barcode"
+                                                    DisplayMemberBinding="{Binding Barcode}"/>
+                                    <GridViewColumn Header="Nama Satuan"
+                                                    DisplayMemberBinding="{Binding Name}"/>
+                                    <GridViewColumn Header="Jumlah (dalam Satuan Referensi)"
+                                                    DisplayMemberBinding="{Binding QtyPerUnit}"/>
+                                    <GridViewColumn Header="Harga"
+                                                    DisplayMemberBinding="{Binding Price, StringFormat='Rp #,#'}"/>
+                                    <GridViewColumn Header="Jenis Satuan"
+                                                    DisplayMemberBinding="{Binding Nature}"/>
+                                    <GridViewColumn Header="Status"
+                                                    DisplayMemberBinding="{Binding Status, Converter={StaticResource boolStatus_to_string}}"/>
+                                    <GridViewColumn Header="Hapus">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Button Style="{StaticResource btnDelete}"
+                                                        Click="DeleteUnit_Click"/>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                    </DockPanel>-->
+                </DockPanel>
+                <ListView IsEnabled="{Binding IsItemIdle}"
+                          ItemsSource="{Binding Source={StaticResource itemSource}}"
+                          ItemContainerStyle="{StaticResource lviDefault}">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Pilih">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <CheckBox Style="{StaticResource ckbSelect}"
+                                                  Checked="Select_CheckedChanged"
+                                                  Unchecked="Deselect_CheckedChanged"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="Nama Barang"
+                                            DisplayMemberBinding="{Binding Name}"/>
+                            <GridViewColumn Header="Kategori"
+                                            DisplayMemberBinding="{Binding Group.Name}"/>
+                            <GridViewColumn Header="Satuan Referensi"
+                                            DisplayMemberBinding="{Binding RefUnit}"/>
+                            <GridViewColumn Header="Batas Minimum Laba"
+                                            DisplayMemberBinding="{Binding MinimumProfit, StringFormat='Rp #,#'}"/>
+                            <GridViewColumn Header="Jumlah Minimum Persediaan"
+                                            DisplayMemberBinding="{Binding SafetyStockPortion}"/>
+                            <GridViewColumn Header="Status"
+                                            DisplayMemberBinding="{Binding Status, Converter={StaticResource boolStatus_to_string}}"/>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </DockPanel>
+        </Border>
+        
+    </DockPanel>
+</UserControl>

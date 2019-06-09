@@ -1,0 +1,40 @@
+﻿<UserControl x:Class="WelldonePOS.UserControls.Misc.LoginBox"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <UserControl.Resources>
+        <CollectionViewSource x:Key="userSource"
+                              Source="{Binding CurrentUserCollection}"/>
+    </UserControl.Resources>
+
+    <Border Style="{StaticResource bdrLoginBox_1}">
+        <StackPanel>
+            
+            <Rectangle Style="{StaticResource rctLoginBox_1}"/>
+            
+            <DockPanel LastChildFill="False">
+                <Button DockPanel.Dock="Right"
+                        Style="{StaticResource btnLoginBox_1}"
+                        Click="Shutdown_Clicked"/>
+            </DockPanel>
+
+            <StackPanel Style="{StaticResource splLoginBox_1}">
+                <TextBlock Style="{StaticResource tblLoginBox_1}" 
+                           Text="Username"/>
+                <ComboBox Style="{StaticResource cbbLoginBox_1}"
+                          ItemsSource="{Binding Source={StaticResource userSource}}"
+                          DisplayMemberPath="Name"
+                          SelectionChanged="Detail_SelectionChanged"/>
+                <TextBlock Style="{StaticResource tblLoginBox_1}"  
+                           Text="Password"/>
+                <PasswordBox x:Name="passBox" 
+                             Style="{StaticResource pwbLoginBox_1}"
+                             KeyDown="Password_KeyDown"
+                             PasswordChanged="Password_Changed"/>
+                <Button Style="{StaticResource btnLoginBox_2}"
+                        Click="Login_Clicked"/>
+            </StackPanel>
+            
+        </StackPanel>
+    </Border>
+
+</UserControl>

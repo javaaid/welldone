@@ -1,0 +1,110 @@
+﻿<UserControl x:Class="WelldonePOS.UserControls.Misc.AppMenu"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <StackPanel Style="{StaticResource splAppMenu_1}">
+        <StackPanel Orientation="Horizontal"
+                    Style="{StaticResource splAppMenu_2}"
+                    Visibility="{Binding CurrentLogin.Accessibility.Rights[0], Converter={StaticResource bool_to_visibility}}">
+            <Rectangle Style="{StaticResource rctAppMenu_1}"
+                       Fill="{StaticResource AppFormIcon}"/>
+            <TextBlock Style="{StaticResource tblAppMenu_1}" 
+                       Text="FORM APLIKASI"/>
+        </StackPanel>
+        <Button Content="Penjualan"
+                Style="{StaticResource btnAppMenu_1}"
+                Visibility="{Binding CurrentLogin.Accessibility.Rights[1], Converter={StaticResource bool_to_visibility}}"
+                Click="TFormSales_Clicked"/>
+        <Button Content="Return Penjualan"
+                Style="{StaticResource btnAppMenu_1}"
+                Visibility="{Binding CurrentLogin.Accessibility.Rights[3], Converter={StaticResource bool_to_visibility}}"
+                />
+        <Button Content="Penerimaan Barang"
+                Style="{StaticResource btnAppMenu_1}"
+                Visibility="{Binding CurrentLogin.Accessibility.Rights[5], Converter={StaticResource bool_to_visibility}}"
+                Click="TFormReceipt_Clicked"/>
+        <Button Content="Return Penerimaan Barang"
+                Style="{StaticResource btnAppMenu_1}"
+                Visibility="{Binding CurrentLogin.Accessibility.Rights[7], Converter={StaticResource bool_to_visibility}}"
+                />
+        <Button Content="Pembayaran"
+                Style="{StaticResource btnAppMenu_1}"
+                Visibility="{Binding CurrentLogin.Accessibility.Rights[9], Converter={StaticResource bool_to_visibility}}"
+                Click="TFormPurchase_Clicked"/>
+        <StackPanel Orientation="Horizontal"
+                    Style="{StaticResource splAppMenu_2}"
+                    Visibility="{Binding CurrentLogin.Accessibility.Rights[11], Converter={StaticResource bool_to_visibility}}">
+            <Rectangle Style="{StaticResource rctAppMenu_1}"
+                       Fill="{StaticResource ReportIcon}"/>
+            <TextBlock Style="{StaticResource tblAppMenu_1}" 
+                       Text="LAPORAN"/>
+        </StackPanel>
+        <Button Content="Penjualan"
+                Style="{StaticResource btnAppMenu_1}"
+                Visibility="{Binding CurrentLogin.Accessibility.Rights[12], Converter={StaticResource bool_to_visibility}}"
+                />
+        <Button Content="Return Penjualan"
+                Style="{StaticResource btnAppMenu_1}"
+                Visibility="{Binding CurrentLogin.Accessibility.Rights[15], Converter={StaticResource bool_to_visibility}}"
+                />
+        <Button Content="Penerimaan Barang"
+                Style="{StaticResource btnAppMenu_1}"
+                Visibility="{Binding CurrentLogin.Accessibility.Rights[18], Converter={StaticResource bool_to_visibility}}"
+                />
+        <Button Content="Return Penerimaan Barang"
+                Style="{StaticResource btnAppMenu_1}"
+                Visibility="{Binding CurrentLogin.Accessibility.Rights[21], Converter={StaticResource bool_to_visibility}}"
+                />
+        <Button Content="Pembayaran"
+                Style="{StaticResource btnAppMenu_1}"
+                Visibility="{Binding CurrentLogin.Accessibility.Rights[24], Converter={StaticResource bool_to_visibility}}"
+                />
+        <StackPanel Orientation="Horizontal"
+                    Style="{StaticResource splAppMenu_2}"
+                    Visibility="{Binding CurrentLogin.Accessibility.Rights[27], Converter={StaticResource bool_to_visibility}}">
+            <Rectangle Style="{StaticResource rctAppMenu_1}"
+                       Fill="{StaticResource DataSetupIcon}"/>
+            <TextBlock Style="{StaticResource tblAppMenu_1}" 
+                       Text="SETUP DATA"/>
+        </StackPanel>
+        <Button Content="Barang"
+                Style="{StaticResource btnAppMenu_1}"
+                Visibility="{Binding CurrentLogin.Accessibility.Rights[28], Converter={StaticResource bool_to_visibility}}"
+                Click="SetupDataItem_Clicked"/>
+        <Button Content="Customer"
+                Style="{StaticResource btnAppMenu_1}"
+                Visibility="{Binding CurrentLogin.Accessibility.Rights[32], Converter={StaticResource bool_to_visibility}}"
+                Click="SetupDataCustomer_Clicked"/>
+        <Button Content="Supplier"
+                Style="{StaticResource btnAppMenu_1}"
+                Visibility="{Binding CurrentLogin.Accessibility.Rights[36], Converter={StaticResource bool_to_visibility}}"
+                Click="SetupDataSupplier_Clicked"/>
+        <Button Content="Kategori"
+                Style="{StaticResource btnAppMenu_1}"
+                Visibility="{Binding CurrentLogin.Accessibility.Rights[40], Converter={StaticResource bool_to_visibility}}"
+                Click="SetupDataCategory_Clicked"/>
+        <StackPanel Orientation="Horizontal"
+                    Style="{StaticResource splAppMenu_2}"
+                    Visibility="{Binding CurrentLogin.Accessibility.Rights[44], Converter={StaticResource bool_to_visibility}}">
+            <Rectangle Style="{StaticResource rctAppMenu_1}"
+                       Fill="{StaticResource SettingIcon}"/>
+            <TextBlock Style="{StaticResource tblAppMenu_1}" 
+                       Text="PENGATURAN"/>
+        </StackPanel>
+        <Button Content="Toko"
+                Style="{StaticResource btnAppMenu_1}"
+                Visibility="{Binding CurrentLogin.Accessibility.Rights[45], Converter={StaticResource bool_to_visibility}}"
+                Click="SetupGeneralSettings_Clicked"/>
+        <Button Content="User"
+                Style="{StaticResource btnAppMenu_1}"
+                Visibility="{Binding CurrentLogin.Accessibility.Rights[47], Converter={StaticResource bool_to_visibility}}"
+                Click="SetupUser_Clicked"/>
+        <Button Content="Hak User"
+                Style="{StaticResource btnAppMenu_1}"
+                Visibility="{Binding CurrentLogin.Accessibility.Rights[51], Converter={StaticResource bool_to_visibility}}"
+                Click="SetupUserRight_Clicked"/>
+        <Button Content="Tema"
+                Style="{StaticResource btnAppMenu_1}"
+                Visibility="{Binding CurrentLogin.Accessibility.Rights[55], Converter={StaticResource bool_to_visibility}}"
+                />
+    </StackPanel>
+</UserControl>
